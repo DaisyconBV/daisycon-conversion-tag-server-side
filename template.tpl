@@ -365,63 +365,59 @@ switch (data.eventType) {
   case 'conversion':
     const dci = getCookieValues('dci')[0] || '';
 
-    if (dci) {
-      const loggingEnabled = determineLoggingEnabled();
-      const traceId = getRequestHeader('trace-id');
+    const loggingEnabled = determineLoggingEnabled();
+    const traceId = getRequestHeader('trace-id');
 
-      const requestParameters = {
-        ci:  data.campaignId,
-        dci: dci,
-        ti: data.transactionId,
-        a: data.orderAmount,
-        r: data.orderRevenue,
-        cur: data.currencyCode,
-        cc: data.commissionCode,
-        pr: data.promotionCode,
-        pn: data.descriptionAffiliate,
-        iv: data.descriptionAdvertiser,
-        e1: data.extra1,
-        e2: data.extra2,
-        e3: data.extra3,
-        e4: data.extra4,
-        e5: data.extra5,
-        src: 'gtm-conversion-ss|1.0'
-      };
+    const requestParameters = {
+      ci:  data.campaignId,
+      dci: dci,
+      ti: data.transactionId,
+      a: data.orderAmount,
+      r: data.orderRevenue,
+      cur: data.currencyCode,
+      cc: data.commissionCode,
+      pr: data.promotionCode,
+      pn: data.descriptionAffiliate,
+      iv: data.descriptionAdvertiser,
+      e1: data.extra1,
+      e2: data.extra2,
+      e3: data.extra3,
+      e4: data.extra4,
+      e5: data.extra5,
+      src: 'gtm-conversion-ss|1.1'
+    };
 
-      const requestUrl = 'https://gtm.daisycon.io/d/?' + buildQueryString(requestParameters);
+    const requestUrl = 'https://gtm.daisycon.io/d/?' + buildQueryString(requestParameters);
 
+    if (loggingEnabled) {
+      logToConsole(JSON.stringify({
+        Name: 'Daisycon',
+        EventType: 'conversion',
+        TraceId: traceId,
+        RequestMethod: 'GET',
+        RequestUrl: requestUrl,
+        RequestParameters: requestParameters
+      }));
+    }
+
+    sendHttpRequest(requestUrl, (statusCode, headers, body) => {
       if (loggingEnabled) {
         logToConsole(JSON.stringify({
           Name: 'Daisycon',
           EventType: 'conversion',
           TraceId: traceId,
-          RequestMethod: 'GET',
-          RequestUrl: requestUrl,
-          RequestParameters: requestParameters
+          ResponseStatusCode: statusCode,
+          ResponseHeaders: headers,
+          ResponseBody: body,
         }));
       }
 
-      sendHttpRequest(requestUrl, (statusCode, headers, body) => {
-        if (loggingEnabled) {
-          logToConsole(JSON.stringify({
-            Name: 'Daisycon',
-            EventType: 'conversion',
-            TraceId: traceId,
-            ResponseStatusCode: statusCode,
-            ResponseHeaders: headers,
-            ResponseBody: body,
-          }));
-        }
-
-        if (statusCode >= 200 && statusCode < 300) {
-          data.gtmOnSuccess();
-        } else {
-          data.gtmOnFailure();
-        }
-      }, {method: 'GET'});
-    } else {
-      data.gtmOnSuccess();
-    }
+      if (statusCode >= 200 && statusCode < 300) {
+        data.gtmOnSuccess();
+      } else {
+        data.gtmOnFailure();
+      }
+    }, {method: 'GET'});
     break;
 
   default:
@@ -803,28 +799,6 @@ scenarios:
     assertThat(argOptions['max-age']).isStrictlyEqualTo(31622400);
     assertThat(argNoEncode).isStrictlyEqualTo(false);
     assertApi('gtmOnSuccess').wasCalled();
-- name: Conversion (without cookie)
-  code: |-
-    // Mocked data
-    const mockData = {
-      eventType: 'conversion'
-    };
-
-    // Mock API
-    mock("getCookieValues", (name) => {
-      return [];
-    });
-
-    // Call runCode to run the template's code.
-    runCode(mockData);
-
-    // Asserts
-    assertApi('getCookieValues').wasCalled();
-    assertApi('getContainerVersion').wasNotCalled();
-    assertApi('getRequestHeader').wasNotCalled();
-    assertApi('logToConsole').wasNotCalled();
-    assertApi('sendHttpRequest').wasNotCalled();
-    assertApi('gtmOnSuccess').wasCalled();
 - name: Conversion (with cookie, without logging, response success)
   code: "// Mocked data\nconst mockData = {\n  eventType: 'conversion',\n  logType:\
     \ 'never',\n  campaignId: 12345,\n  transactionId: 'ORDER-0001',\n  orderAmount:\
@@ -842,7 +816,7 @@ scenarios:
     \ 'G'}\");\n});\n\n// Call runCode to run the template's code.\nrunCode(mockData);\n\
     \n// Asserts\nassertApi('getCookieValues').wasCalledWith('dci');\nassertApi('getContainerVersion').wasCalled();\n\
     assertApi('getRequestHeader').wasCalledWith('trace-id');\nassertApi('logToConsole').wasNotCalled();\n\
-    assertApi('sendHttpRequest').wasCalled();\nassertThat(argUrl).isStrictlyEqualTo('https://gtm.daisycon.io/d/?ci=12345&dci=tEsTdCi&ti=ORDER-0001&a=14.99&r=19.99&cur=EUR&cc=testCommission&pr=discount%2010%25&pn=Test%20order%20(affiliate)&iv=Test%20order%20(advertiser)&e1=extra%201&e2=extra%202&e3=extra%203&e4=extra%204&e5=extra%205&src=gtm-conversion-ss%7C1.0');\n\
+    assertApi('sendHttpRequest').wasCalled();\nassertThat(argUrl).isStrictlyEqualTo('https://gtm.daisycon.io/d/?ci=12345&dci=tEsTdCi&ti=ORDER-0001&a=14.99&r=19.99&cur=EUR&cc=testCommission&pr=discount%2010%25&pn=Test%20order%20(affiliate)&iv=Test%20order%20(advertiser)&e1=extra%201&e2=extra%202&e3=extra%203&e4=extra%204&e5=extra%205&src=gtm-conversion-ss%7C1.1');\n\
     assertThat(argOptions.method).isStrictlyEqualTo('GET');\nassertThat(argBody).isUndefined();\n\
     assertApi('gtmOnSuccess').wasCalled();"
 - name: Conversion (with cookie, without logging, response failure)
@@ -859,7 +833,7 @@ scenarios:
     \ code.\nrunCode(mockData);\n\n// Asserts\nassertApi('getCookieValues').wasCalledWith('dci');\n\
     assertApi('getContainerVersion').wasCalled();\nassertApi('getRequestHeader').wasCalledWith('trace-id');\n\
     assertApi('logToConsole').wasNotCalled();\nassertApi('sendHttpRequest').wasCalled();\n\
-    assertThat(argUrl).isStrictlyEqualTo('https://gtm.daisycon.io/d/?ci=12345&dci=tEsTdCi&ti=ORDER-0001&src=gtm-conversion-ss%7C1.0');\n\
+    assertThat(argUrl).isStrictlyEqualTo('https://gtm.daisycon.io/d/?ci=12345&dci=tEsTdCi&ti=ORDER-0001&src=gtm-conversion-ss%7C1.1');\n\
     assertThat(argOptions.method).isStrictlyEqualTo('GET');\nassertThat(argBody).isUndefined();\n\
     assertApi('gtmOnFailure').wasCalled();"
 - name: Conversion (with cookie, with logging - always)
@@ -902,7 +876,7 @@ scenarios:
       Name: 'Daisycon',
       EventType: 'conversion',
       RequestMethod: 'GET',
-      RequestUrl: 'https://gtm.daisycon.io/d/?ci=12345&dci=tEsTdCi&ti=ORDER-0001&src=gtm-conversion-ss%7C1.0',
+      RequestUrl: 'https://gtm.daisycon.io/d/?ci=12345&dci=tEsTdCi&ti=ORDER-0001&src=gtm-conversion-ss%7C1.1',
       RequestParameters: {
         ci: 12345,
         dci: 'tEsTdCi',
