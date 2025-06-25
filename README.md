@@ -2,7 +2,7 @@
 
 This is Daisycon’s official server-side tag template for conversion tracking in Google Tag Manager (GTM). It’s used in your server-side GTM container and works together with the client-side Synergy Tag to support hybrid tracking.
 
-Together, these tags improve the accuracy of your affiliate reporting — even when browser limitations might otherwise block key data.
+Together, these tags improve the accuracy of your affiliate reporting, even when browser limitations might otherwise block key data.
 
 ## What it does
 
