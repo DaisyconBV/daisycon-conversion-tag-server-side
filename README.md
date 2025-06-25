@@ -21,4 +21,5 @@ In short: this tag is essential for Daisycon affiliate tracking when you're usin
 Need help setting it up? Our step-by-step guides walk you through connecting this server-side tag with the Synergy Tag on the client side:
 
 [How to set up the Daisycon Server-side Conversion Tag](https://faq-advertiser.daisycon.com/hc/en-us/articles/7046670401820)
+
 [How to set up Hybrid Tracking with the Daisycon Synergy Tag](https://faq-advertiser.daisycon.com/hc/en-us/articles/20622723791772)
