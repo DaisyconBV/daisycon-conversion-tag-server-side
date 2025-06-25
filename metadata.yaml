@@ -2,6 +2,8 @@ homepage: "https://www.daisycon.com"
 documentation: "https://faq-advertiser.daisycon.com/hc/en-us/articles/7046670401820"
 versions:
   # Latest version
+  - sha: d02698ce5d2f9b861efe2512332c6ade297c3c2a
+    changeNotes: Hybrid and gclid support
   - sha: e382790dfc96f0c01bbce6515298efbd7cfebfb3
     changeNotes: Remove dci check
   - sha: 8379da59aa8579bb7b0d3bc55858ffb9bc6fca24
