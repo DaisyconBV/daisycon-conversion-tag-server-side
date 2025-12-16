@@ -381,6 +381,7 @@ switch (data.eventType) {
       path:     '/',
       secure:   true,
       httpOnly: false,
+      sameSite: 'None',
       'max-age': 31622400 // 1 year
     };
 
@@ -442,7 +443,7 @@ switch (data.eventType) {
       e3:   data.extra3,
       e4:   data.extra4,
       e5:   data.extra5,
-      src:  'gtm-conversion-ss|1.2'
+      src:  'gtm-conversion-ss|1.2.1'
     };
 
     const requestUrl = 'https://gtm.daisycon.io/d/?' +
@@ -1244,13 +1245,12 @@ scenarios:
 
 ___NOTES___
 
-Last updated: 20/06/2025
+Last updated: 16/12/2025
 Maintained by: Daisycon B.V.
 
 Key changes in this version:
-- Added synergyReference parameter for hybrid support alongside the client-side Synergy tag.
-- Added GCLID support for future-proofing with Google Shopping infrastructure.
-- Refactored request-building logic to align with other Daisycon tag conventions.
+- Improved reliability of click ID cookie storage in server-side GTM setups.
+- Prevented cookie blocking in non–top-level collect requests by aligning cookie attributes with modern browser requirements.
 
 Original creation: 30/09/2022
 For support, please refer to Daisycon’s official documentation or contact Daisycon support.
