@@ -2,6 +2,8 @@ homepage: "https://www.daisycon.com"
 documentation: "https://faq-advertiser.daisycon.com/hc/en-us/articles/7046670401820"
 versions:
   # Latest version
+  - sha: 5bcf6f94d3a5b00686c84078c9212d75c6565f14
+    changeNotes: Add product-level tracking
   - sha: 3da5dfee02bbdad411b262604c68a5166467f17d
     changeNotes: Minor fix cookie blocking in certain sGTM contexts
   - sha: d02698ce5d2f9b861efe2512332c6ade297c3c2a
